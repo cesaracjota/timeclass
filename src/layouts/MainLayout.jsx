@@ -6,7 +6,7 @@ import ToolbarActions from './ToolBarActions';
 // Custom App Title
 function CustomAppTitle() {
   return (
-    <h1 style={{ fontSize: "1.4rem", fontWeight: "bold", margin: "0 auto", alignSelf: "center", color: "#6a5eef" }} className="text-primary text-center">⌚TIMECLASS</h1>
+    <h1 style={{ fontSize: "1.4rem", fontWeight: "bold", margin: "0 auto", alignSelf: "center", color: "#a47e1b" }} className="text-primary text-center">TIMECLASS</h1>
   );
 }
 

@@ -10,11 +10,11 @@ export const theme = createTheme({
       palette: {
         mode: 'light',
         primary: {
-          main: '#6A5EEF',
+          main: '#c9a227',
           contrastText: '#fff',
         },
         info: {
-          main: '#6A5EEF',
+          main: '#c9a227',
           contrastText: '#fff',
         },
       },
@@ -23,11 +23,11 @@ export const theme = createTheme({
       palette: {
         mode: 'dark',
         primary: {
-          main: '#6A5EEF',
+          main: '#c9a227',
           contrastText: '#fff',
         },
         info: {
-          main: '#6A5EEF',
+          main: '#c9a227',
           contrastText: '#fff',
         },
       },
@@ -40,16 +40,16 @@ export const theme = createTheme({
           borderRadius: 4,
           paddingInline: '20px',
           '&.MuiButton-contained': {
-            backgroundColor: '#6A5EEF',
+            backgroundColor: '#c9a227',
             color: '#ffffff',
             '&:hover': {
-              backgroundColor: '#5A4EDE',
+              backgroundColor: '#a47e1b',
             },
             '&:active': {
-              backgroundColor: '#4A3ECE',
+              backgroundColor: '#a47e1b',
             },
             '&:focus': {
-              backgroundColor: '#4A3ECE',
+              backgroundColor: '#a47e1b',
             },
             '&:disabled': {
               backgroundColor: '#B3B3B3',
@@ -57,11 +57,11 @@ export const theme = createTheme({
             },
           },
           '&.MuiButton-outlined': {
-            borderColor: '#6A5EEF',
-            color: '#6A5EEF',
+            borderColor: '#c9a227',
+            color: '#c9a227',
             '&:hover': {
-              borderColor: '#5A4EDE',
-              color: '#5A4EDE',
+              borderColor: '#a47e1b',
+              color: '#a47e1b',
             },
           }
         },
