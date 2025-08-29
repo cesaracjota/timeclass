@@ -1,0 +1,95 @@
+import React from "react";
+import { useNavigate } from "react-router";
+import {
+    Box,
+    Typography,
+    Button,
+    Paper,
+    useTheme,
+    Stack,
+} from "@mui/material";
+import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
+
+export const NotFound = () => {
+    const navigate = useNavigate();
+    const theme = useTheme();
+
+    return (
+        <Box
+            width="100%"
+            height="100%"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            px={2}
+        >
+            <Paper
+                elevation={0}
+                sx={{
+                    p: 6,
+                    width: "100%",
+                    textAlign: "center",
+                }}
+            >
+                <Stack spacing={4} alignItems="center">
+                    {/* Icon or animation */}
+                    <Box
+                        sx={{
+                            bgcolor: theme.palette.mode === "dark" ? "primary.dark" : "primary.light",
+                            borderRadius: "50%",
+                            p: 3,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            width: 120,
+                            height: 120,
+                            boxShadow: 4,
+                        }}
+                    >
+                        <WarningAmberRoundedIcon
+                            sx={{ fontSize: 60, color: theme.palette.primary.main }}
+                        />
+                    </Box>
+
+                    {/* Text */}
+                    <Box>
+                        <Typography variant="h2" fontWeight="bold" color="text.primary">
+                            404
+                        </Typography>
+                        <Typography variant="h5" color="text.secondary" mt={1}>
+                            Página no encontrada
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary" mt={2}>
+                            Lo sentimos, la página que estás buscando no existe o ha sido movida.
+                        </Typography>
+                    </Box>
+
+                    {/* Button */}
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        size="large"
+                        onClick={() => navigate("/")}
+                        startIcon={
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                fill="currentColor"
+                                viewBox="0 0 20 20"
+                            >
+                                <path
+                                    fillRule="evenodd"
+                                    d="M9.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
+                                    clipRule="evenodd"
+                                />
+                            </svg>
+                        }
+                    >
+                        Volver al inicio
+                    </Button>
+                </Stack>
+            </Paper>
+        </Box>
+    );
+};
