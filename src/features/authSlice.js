@@ -2,6 +2,7 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import authService from "../services/auth.service";
+import { CustomToast } from "../utils/CustomToast";
 
 // Leer del localStorage
 const user = JSON.parse(localStorage.getItem('user'));
@@ -20,9 +21,16 @@ const initialState = {
 // Helpers
 const handleError = (error, thunkAPI) => {
     const message =
-        (error.response && error.response.data && error.response.data.msg) ||
+        (error.response && error.response.data && error.response.data.msg && error.response.data.error) ||
         error.message ||
-        error.toString();
+        error.toString() || error.response.data.error;
+    CustomToast({
+        title: "Error",
+        message: error?.response?.data?.error || "Credenciales incorrectas",
+        type: "error",
+        duration: 2500,
+        position: "bottom",
+    });
     return thunkAPI.rejectWithValue(message);
 };
 

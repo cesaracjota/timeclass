@@ -1,7 +1,7 @@
 // navigation.js o directamente en App.jsx
 
 import { ListAlt } from "@mui/icons-material";
-import { Clock, HomeIcon, UploadCloudIcon, User2Icon, Users2 } from "lucide-react";
+import { Clock, HomeIcon, Settings2Icon, UploadCloudIcon, User2Icon, Users2 } from "lucide-react";
 
 export const navigation = [
     {
@@ -98,5 +98,11 @@ export const navigation = [
                 allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'],
             }
         ],
+    },
+    {
+        segment: 'settings',
+        title: 'CONFIGURACIONES',
+        icon: <Settings2Icon />,
+        allowedRoles: ['ADMIN'],
     }
 ];

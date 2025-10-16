@@ -5,6 +5,7 @@ import { WorkHoursImportAcademyPage, WorkHoursImportSchoolPage, WorkHoursPage } 
 import HomePage from "../pages/HomePage";
 import TeacherWorkHourPage from "../pages/TeacherWorkHourPage";
 import ReportPage from "../pages/ReportPage";
+import SettingPage from "../pages/SettingPage";
 
 export const routesConfig = [
     {
@@ -56,5 +57,10 @@ export const routesConfig = [
         path: "/reports/work-hours",
         element: <ReportPage />,
         roles: ["ADMIN", "TEACHER", "SUPERVISOR"],
+    },
+    {
+        path: "/settings",
+        element: <SettingPage />,
+        roles: ["ADMIN"],
     }
 ];

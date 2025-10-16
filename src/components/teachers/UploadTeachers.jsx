@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { UploadCloud, FileText, AlertCircle, DownloadCloud, SheetIcon, DownloadCloudIcon, ChevronDownIcon } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { resetTeacher, uploadTeachers } from "../../features/teacherSlice";
+import { getSettings } from "../../features/settingSlice";
 import { CustomToast } from "../../utils/CustomToast";
 import {
   Box,
@@ -27,6 +28,7 @@ export default function UploadTeachers() {
   const [isLoading, setIsLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const { teacherImportResponse } = useSelector((state) => state.teacher);
+  const { settings } = useSelector((state) => state.setting);
 
   const validateFile = (file) => {
     if (!file?.name.endsWith(".csv")) {
@@ -44,6 +46,7 @@ export default function UploadTeachers() {
 
   useEffect(() => {
     dispatch(resetTeacher());
+    dispatch(getSettings());
   }, [dispatch]);
 
   const handleFileChange = (e) => {
@@ -113,13 +116,13 @@ export default function UploadTeachers() {
 
   const handleGoogleSheets = () => {
     // Abrir Google Sheets en una nueva pestaña
-    window.open('https://docs.google.com/spreadsheets/d/1Xnf_C0Et7th7K4srh0BFspDf6DWvSOL-8BLDyAhe_eo', '_blank');
+    window.open(settings?.driveLink3, '_blank');
     handleMenuClose();
   };
 
   const handleDownload = () => {
     // Descargar la plantilla CSV
-    window.open('https://docs.google.com/spreadsheets/d/1Xnf_C0Et7th7K4srh0BFspDf6DWvSOL-8BLDyAhe_eo/export?format=csv&gid=0', '_blank');
+    window.open(settings?.driveLink3 + '/export?format=csv&gid=0', '_blank');
     handleMenuClose();
   };
 

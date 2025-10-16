@@ -180,10 +180,21 @@ const Users = () => {
       cell: ({ getValue }) => {
         const value = getValue();
         return <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
-          <Switch checked={value} disabled />
-          <Typography variant="body2" color="text.secondary">
-            {value ? 'SI' : 'NO'}
-          </Typography>
+          <Chip
+            label={value ? 'SI' : 'NO'}
+            size="small"
+            sx={{
+              borderRadius: '999px',
+              fontWeight: 500,
+              backgroundColor: value ? theme.palette.success.main : theme.palette.error.main,
+              color: 'white',
+              borderColor: value ? theme.palette.success.main : theme.palette.error.main,
+              borderWidth: 1,
+              borderStyle: 'solid',
+              textTransform: 'uppercase',
+            }}
+            variant="outlined"
+          />
         </Box>;
       },
     }),
@@ -202,6 +213,29 @@ const Users = () => {
         );
       },
       size: 180,
+    }),
+    columnHelper.accessor('active', {
+      header: 'Estado',
+      cell: ({ getValue }) => {
+        const value = getValue();
+        return <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
+          <Chip
+            label={value ? 'ACTIVO' : 'INACTIVO'}
+            size="small"
+            sx={{
+              borderRadius: '999px',
+              fontWeight: 500,
+              backgroundColor: value ? theme.palette.success.main : theme.palette.error.main,
+              color: 'white',
+              borderColor: value ? theme.palette.success.main : theme.palette.error.main,
+              borderWidth: 1,
+              borderStyle: 'solid',
+              textTransform: 'uppercase',
+            }}
+            variant="outlined"
+          />
+        </Box>;
+      },
     }),
     columnHelper.accessor('id', {
       header: 'Acciones',

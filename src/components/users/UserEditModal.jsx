@@ -23,7 +23,8 @@ import {
     InputAdornment,
     Stack,
     useMediaQuery,
-    alpha
+    alpha,
+    Switch
 } from "@mui/material";
 import { Formik, Form, Field } from "formik";
 import { userUpdateValidationSchema } from "../../validations/UserValidations";
@@ -47,7 +48,8 @@ const UserEditModal = ({ user }) => {
         dni: user.dni,
         role: user.role,
         password: "",
-        confirmPassword: ""
+        confirmPassword: "",
+        active: user.active
     };
 
     const roleOptions = [
@@ -59,7 +61,7 @@ const UserEditModal = ({ user }) => {
 
     const handleSubmit = async (values, { setSubmitting, resetForm }) => {
         const userData = { ...values };
-        
+
         // Si no se proporcionó contraseña, eliminamos los campos relacionados
         if (!userData.password) {
             delete userData.password;
@@ -163,7 +165,7 @@ const UserEditModal = ({ user }) => {
                     validationSchema={userUpdateValidationSchema}
                     onSubmit={handleSubmit}
                 >
-                    {({ isSubmitting, errors, touched }) => (
+                    {({ isSubmitting, errors, touched, values }) => (
                         <Form>
                             <DialogContent sx={{ px: 4, py: 3 }} dividers>
                                 <Stack gap={2.5} direction={["column", "row", "row"]} sx={{ flexWrap: 'wrap' }}>
@@ -285,6 +287,16 @@ const UserEditModal = ({ user }) => {
                                         />
                                     </Stack>
                                 </Stack>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center', backgroundColor: 'background.paper', mt: 2, borderRadius: '999px', p: 1 }}>
+                                    <Typography variant="body2" color="text.secondary">
+                                        Habilitar o deshabilitar el usuario
+                                    </Typography>
+                                    <Field
+                                        as={Switch}
+                                        name="active"
+                                        checked={values.active}
+                                    />
+                                </Box>
                             </DialogContent>
 
                             <DialogActions sx={{ px: 4, py: 3, borderTop: `1px solid ${theme.palette.divider}` }}>

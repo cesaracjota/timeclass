@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { resetWorkHour, uploadWorkHours } from "../../features/workHourSlice";
 import { SkippedItemsAlert } from "../ui/SkippedItemsAlert";
+import { getSettings } from "../../features/settingSlice";
 
 export default function WorkHoursAcademyImport() {
     const fileInputRef = useRef(null);
@@ -27,9 +28,14 @@ export default function WorkHoursAcademyImport() {
     const [isLoading, setIsLoading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
     const { workHoursSkippedAcademy, workHourImportResponse } = useSelector((state) => state.workHour);
+    const { settings } = useSelector((state) => state.setting);
 
     useEffect(() => {
         dispatch(resetWorkHour());
+    }, [dispatch]);
+
+    useEffect(() => {
+        dispatch(getSettings());
     }, [dispatch]);
 
     const validateFile = (file) => {
@@ -112,12 +118,12 @@ export default function WorkHoursAcademyImport() {
     };
 
     const handleGoogleSheets = () => {
-        window.open('https://docs.google.com/spreadsheets/d/1CY9b6iEoFh5v579nFkwBNDlfUTy2y50hHcYICUkM4IA', '_blank');
+        window.open(settings?.driveLink2, '_blank');
         handleMenuClose();
     };
 
     const handleDownload = () => {
-        window.open('https://docs.google.com/spreadsheets/d/1CY9b6iEoFh5v579nFkwBNDlfUTy2y50hHcYICUkM4IA/export?format=csv&gid=0', '_blank');
+        window.open(settings?.driveLink2 + '/export?format=csv&gid=0', '_blank');
         handleMenuClose();
     };
 

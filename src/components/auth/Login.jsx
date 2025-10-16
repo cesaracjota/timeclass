@@ -41,13 +41,7 @@ const Login = () => {
       await dispatch(login(values)).unwrap();
       navigate("/change-password", { replace: true });
     } catch (error) {
-      CustomToast({
-        title: "Error",
-        message: error?.message || "Credenciales incorrectas",
-        type: "error",
-        duration: 2500,
-        position: "bottom",
-      });
+      console.log(error);
     }
     setSubmitting(false);
   };
@@ -63,9 +57,7 @@ const Login = () => {
         <Box textAlign="center" mb={2}>
           <h1 style={{ fontSize: "2rem", fontWeight: "bold" }} className="text-primary text-center">TIMECLASS</h1>
           <Typography variant="h6">Sistema de Consulta de Horas Docentes</Typography>
-          <img style={{ width: "80px", height: "80px", margin: "0 auto" }} src="/logo.png" type="image/png" alt="TIMECLASS" className="w-10 h-10" />
         </Box>
-
 
         <Divider sx={{ my: 3 }}>DNI / CORREO</Divider>
 

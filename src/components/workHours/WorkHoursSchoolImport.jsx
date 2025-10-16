@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { resetWorkHour, uploadWorkHours } from "../../features/workHourSlice";
 import { SkippedItemsAlert } from "../ui/SkippedItemsAlert";
+import { getSettings } from "../../features/settingSlice";
 
 export default function WorkHoursSchoolImport() {
     const fileInputRef = useRef(null);
@@ -27,6 +28,11 @@ export default function WorkHoursSchoolImport() {
     const [isLoading, setIsLoading] = useState(false);
     const [dragActive, setDragActive] = useState(false);
     const { workHoursSkippedSchool, workHourImportResponse } = useSelector((state) => state.workHour);
+    const { settings } = useSelector((state) => state.setting);
+
+    useEffect(() => {
+        dispatch(getSettings());
+    }, [dispatch]);
 
     useEffect(() => {
         dispatch(resetWorkHour());
@@ -111,15 +117,13 @@ export default function WorkHoursSchoolImport() {
         setAnchorEl(null);
     };
 
-    const LINK = "https://docs.google.com/spreadsheets/d/1VW-q1hMEryo_PppcmFlVwR2XevVt9Q_ycnc5DIPh4g8"
-
     const handleGoogleSheets = () => {
-        window.open(LINK, '_blank');
+        window.open(settings?.driveLink, '_blank');
         handleMenuClose();
     };
 
     const handleDownload = () => {
-        window.open(`${LINK}/export?format=csv&gid=0`, '_blank');
+        window.open(`${settings?.driveLink}/export?format=csv&gid=0`, '_blank');
         handleMenuClose();
     };
 

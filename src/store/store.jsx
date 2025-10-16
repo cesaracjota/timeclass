@@ -5,6 +5,7 @@ import teacherReducer from "../features/teacherSlice";
 import workHourReducer from "../features/workHourSlice";
 import claimReducer from "../features/claimSlice";
 import reportReducer from "../features/reportSlice";
+import settingReducer from "../features/settingSlice";
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     workHour: workHourReducer,
     claim: claimReducer,
     report: reportReducer,
+    setting: settingReducer,
   },
 });
