@@ -116,9 +116,9 @@ const WorkHoursTeacher = () => {
         columnHelper.accessor("ingreso", {
             header: "INGRESO",
         }),
-        columnHelper.accessor("salida", {
-            header: "SALIDA",
-        }),
+        // columnHelper.accessor("salida", {
+        //     header: "SALIDA",
+        // }),
         columnHelper.accessor("horasFijas", {
             header: "H. FIJAS",
             cell: ({ getValue }) => {
