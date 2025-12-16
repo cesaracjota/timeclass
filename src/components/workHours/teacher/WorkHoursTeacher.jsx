@@ -3,17 +3,20 @@ import { Alert, Box, Button, Chip, Divider, MenuItem, Skeleton, Stack, TextField
 import { useSelector, useDispatch } from "react-redux";
 import MuiDataTable from "../../ui/DataTable";
 import { getWorkHourByTeacherId, getWorkHoursByMonthWeekDay } from "../../../features/workHourSlice";
+import { getSettings } from "../../../features/settingSlice";
 import { createColumnHelper } from "@tanstack/react-table";
 import ClaimCreateModal from "./ClaimCreateModal";
 import ClaimViewModal from "./ClaimViewModal";
 import ConfirmChangeStateDialog from "./ConfirmChangeStateDialog";
 import moment from "moment";
 import { AlertCircle, CheckCircle, CheckCircle2 } from "lucide-react";
+import CountdownTimer from "../../ui/CountdownTimer";
 
 const WorkHoursTeacher = () => {
     const { user } = useSelector((state) => state.auth);
     const teacher = user?.user?.teacher;
     const { workHoursTeacher, isLoading, error } = useSelector((state) => state.workHour);
+    const { settings } = useSelector((state) => state.setting);
     const dispatch = useDispatch();
     const columnHelper = createColumnHelper();
     const [month, setMonth] = useState(new Date().getMonth() + 1);
@@ -22,7 +25,32 @@ const WorkHoursTeacher = () => {
 
     useEffect(() => {
         dispatch(getWorkHourByTeacherId(teacher?.id));
+        dispatch(getSettings());
     }, [dispatch, teacher?.id]);
+
+    const calculateDeadline = (createdAt) => {
+        if (!createdAt || !settings) return null;
+
+        const amount = settings.autoApproveAmount || 4;
+        const unit = settings.autoApproveUnit || 'DAYS';
+
+        let deadline = moment(createdAt);
+
+        switch (unit) {
+            case 'MINUTES':
+                deadline.add(amount, 'minutes');
+                break;
+            case 'HOURS':
+                deadline.add(amount, 'hours');
+                break;
+            case 'DAYS':
+            default:
+                deadline.add(amount, 'days');
+                break;
+        }
+
+        return deadline.toDate();
+    };
 
     const handleRefresh = () => {
         dispatch(getWorkHourByTeacherId(teacher?.id));
@@ -71,7 +99,7 @@ const WorkHoursTeacher = () => {
         return {
             decimal: totalDecimal,
             horas: horas + horasExtra,
-            minutos: minutosFinales
+            minutos: minutosFinales,
         };
     };
 
@@ -116,9 +144,6 @@ const WorkHoursTeacher = () => {
         columnHelper.accessor("ingreso", {
             header: "INGRESO",
         }),
-        // columnHelper.accessor("salida", {
-        //     header: "SALIDA",
-        // }),
         columnHelper.accessor("horasFijas", {
             header: "H. FIJAS",
             cell: ({ getValue }) => {
@@ -126,7 +151,6 @@ const WorkHoursTeacher = () => {
                 return <Typography variant="body2" fontSize={'0.75rem'}>{moment(horasFijas, "HH:mm").format("HH")}h {moment(horasFijas, "HH:mm").format("mm")}min</Typography>;
             },
         }),
-        // tardanza es un campo que puede ser null, por lo que no se debe mostrar en la tabla
         columnHelper.accessor("tardanza", {
             header: "TARDANZA",
             cell: ({ row }) => {
@@ -150,7 +174,7 @@ const WorkHoursTeacher = () => {
                 return (
                     <Chip
                         sx={{ color: 'white', borderRadius: 1.5, boxShadow: 1, fontSize: '0.75rem' }}
-                        label={row.original.tipo}
+                        label={row.original.tipo || '_'}
                         style={{ color: 'white' }}
                         color={row.original.tipo === "ACADEMIA" ? "secondary" : "primary"}
                     />
@@ -170,26 +194,26 @@ const WorkHoursTeacher = () => {
         columnHelper.accessor("actions", {
             header: "ACCIONES",
             cell: ({ row }) => (
-                <Stack direction="row" gap={1}>
+                    <Stack direction="row" gap={1}>
                     {row.original.estado === "PENDING" && (
-                        <>
-                            <ClaimCreateModal workHourId={row.original.id} teacherId={row.original.teacherId} />
+                            <>
+                                <ClaimCreateModal workHourId={row.original.id} teacherId={row.original.teacherId} />
+                                <ConfirmChangeStateDialog idWorkHour={row.original.id} />
+                            </>
+                        )}
+                        {row.original.estado === "REJECTED" && (
+                            <>
+                                <ClaimViewModal idWorkHour={row.original.id} commentsCount={row.original?.claim?._count.comments || 0} />
                             <ConfirmChangeStateDialog idWorkHour={row.original.id} />
-                        </>
-                    )}
-                    {row.original.estado === "REJECTED" && (
-                        <>
-                            <ClaimViewModal idWorkHour={row.original.id} commentsCount={row.original?.claim?._count.comments || 0} />
-                            <ConfirmChangeStateDialog idWorkHour={row.original.id} />
-                        </>
+                            </>
 
-                    )}
-                    {
-                        row.original.estado === "ACCEPTED" && row.original.claim ? (
-                            <ClaimViewModal idWorkHour={row.original.id} commentsCount={row.original?.claim?._count.comments || 0} />
-                        ) : null
-                    }
-                </Stack>
+                        )}
+                        {
+                            row.original.estado === "ACCEPTED" && row.original.claim ? (
+                                <ClaimViewModal idWorkHour={row.original.id} commentsCount={row.original?.claim?._count.comments || 0} />
+                            ) : null
+                        }
+                    </Stack>
             ),
         }),
     ];
@@ -203,6 +227,44 @@ const WorkHoursTeacher = () => {
                     {error}
                 </Alert>
             }
+
+            {/* Countdown Alert for Next Approval */}
+            {workHoursTeacher?.some(wh => wh.estado === "PENDING") && settings && (
+                <Alert
+                    severity="info"
+                    sx={{
+                        mb: 2,
+                        '& .MuiAlert-message': { width: '100%' }
+                    }}
+                    icon={false}
+                    elevation={2}
+                >
+                    <Stack
+                        direction={{ xs: 'column', sm: 'row' }}
+                        alignItems="center"
+                        justifyContent="space-between"
+                        width="100%"
+                        spacing={2}
+                    >
+                        <Box>
+                            <Typography variant="subtitle1" fontWeight="bold" color="primary">
+                                Tiempo restante para aprobación automática de conformidad
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                Sus horas pendientes se darán conformidad automáticamente cuando el contador llegue a cero.
+                            </Typography>
+                        </Box>
+                        <Box>
+                            {(() => {
+                                const pending = workHoursTeacher.filter(wh => wh.estado === "PENDING");
+                                const deadlines = pending.map(wh => calculateDeadline(wh.createdAt));
+                                const nearest = deadlines.sort((a, b) => a - b)[0];
+                                return <CountdownTimer targetDate={nearest} />;
+                            })()}
+                        </Box>
+                    </Stack>
+                </Alert>
+            )}
 
             {/* filtros mes semana dia */}
 
@@ -229,13 +291,13 @@ const WorkHoursTeacher = () => {
                     <MenuItem value="5">SEMANA 5</MenuItem>
                 </TextField>
                 <TextField label="Día" type="number" select sx={{ width: '100%' }} onChange={(e) => setDay(e.target.value)} value={day}>
-                    <MenuItem value="LUNES">LUNES</MenuItem>
-                    <MenuItem value="MARTES">MARTES</MenuItem>
-                    <MenuItem value="MIÉRCOLES">MIÉRCOLES</MenuItem>
-                    <MenuItem value="JUEVES">JUEVES</MenuItem>
-                    <MenuItem value="VIERNES">VIERNES</MenuItem>
-                    <MenuItem value="SÁBADO">SÁBADO</MenuItem>
-                    <MenuItem value="DOMINGO">DOMINGO</MenuItem>
+                    <MenuItem value="lunes">LUNES</MenuItem>
+                    <MenuItem value="martes">MARTES</MenuItem>
+                    <MenuItem value="miercoles">MIERCOLES</MenuItem>
+                    <MenuItem value="jueves">JUEVES</MenuItem>
+                    <MenuItem value="viernes">VIERNES</MenuItem>
+                    <MenuItem value="sabado">SABADO</MenuItem>
+                    <MenuItem value="domingo">DOMINGO</MenuItem>
                 </TextField>
             </Stack>
             <Stack direction="row" justifyContent="flex-end" mb={2} width="100%" spacing={2}>

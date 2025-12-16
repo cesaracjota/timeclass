@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
     Dialog, DialogTitle, DialogContent, DialogActions,
     Button, TextField, IconButton, Stack, Typography, Avatar,
@@ -9,7 +9,7 @@ import {
 import { Edit, Close as CloseIcon } from "@mui/icons-material";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { updateWorkHour } from "../../features/workHourSlice";
 import moment from "moment";
 
@@ -31,28 +31,31 @@ const weeks = [
 ];
 
 const days = [
-    { value: 'LUNES', label: 'LUNES' },
-    { value: 'MARTES', label: 'MARTES' },
-    { value: 'MIÉRCOLES', label: 'MIÉRCOLES' },
-    { value: 'JUEVES', label: 'JUEVES' },
-    { value: 'VIERNES', label: 'VIERNES' },
-    { value: 'SÁBADO', label: 'SÁBADO' },
-    { value: 'DOMINGO', label: 'DOMINGO' },
+    { value: 'LUNES', label: 'lunes' },
+    { value: 'MARTES', label: 'martes' },
+    { value: 'MIERCOLES', label: 'miercoles' },
+    { value: 'JUEVES', label: 'jueves' },
+    { value: 'VIERNES', label: 'viernes' },
+    { value: 'SABADO', label: 'sabado' },
+    { value: 'DOMINGO', label: 'domingo' },
 ];
 
-const WorkHourEditModal = ({ data }) => {
+const WorkHourEditModal = ({ data, disabled }) => {
     const [open, setOpen] = useState(false);
     const dispatch = useDispatch();
 
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    const { user } = useSelector((state) => state.auth.user);
+    const normalizeDay = (day) => {
+        if (!day) return "";
+        return day.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+    };
 
     const initialValues = {
         teacherId: data.teacherId,
         semana: data.semana,
-        dia: data.dia,
+        dia: normalizeDay(data.dia),
         fecha: moment(data.fecha).format("YYYY-MM-DD"),
         turno: data.turno,
         local: data.local,
@@ -89,7 +92,7 @@ const WorkHourEditModal = ({ data }) => {
                 onClick={handleOpen}
                 color="primary"
                 size="medium"
-                disabled={user?.role === "SUPERVISOR"}
+                disabled={disabled}
             >
                 <Edit fontSize="medium" />
             </IconButton>

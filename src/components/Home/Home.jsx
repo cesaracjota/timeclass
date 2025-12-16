@@ -27,7 +27,7 @@ const Home = () => {
     return <TeacherDashboard data={teacherDashboard} isLoading={isTeacherDashboardLoading} openAlert={openAlert} closeAlert={closeAlert} />;
   }
 
-  if (userData?.role === "ADMIN" || userData?.role === "SECRETARY" || userData?.role === "SUPERVISOR") {
+  if (userData?.role === "ADMIN" || userData?.role === "SUPERVISOR") {
     return <AdminDashboard />;
   }
 

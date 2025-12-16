@@ -29,7 +29,10 @@ import WorkHourEditModal from "../workHours/WorkHourEditModal";
 const TeacherWorkHourHistorialModal = ({ teacherId, teacher }) => {
     const [open, setOpen] = useState(false);
     const { workHoursTeacher, isLoading } = useSelector((state) => state.workHour);
+    const { user: authUser } = useSelector((state) => state.auth);
     const dispatch = useDispatch();
+
+    const role = authUser?.user?.role;
     const columnHelper = createColumnHelper();
     const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [week, setWeek] = useState("");
@@ -52,7 +55,7 @@ const TeacherWorkHourHistorialModal = ({ teacherId, teacher }) => {
     ];
 
     const days = [
-        "LUNES", "MARTES", "MIÉRCOLES", "JUEVES", "VIERNES", "SÁBADO", "DOMINGO"
+        "lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"
     ];
 
     const fetchWorkHours = async () => {
@@ -260,7 +263,7 @@ const TeacherWorkHourHistorialModal = ({ teacherId, teacher }) => {
                             <ClaimViewModal idWorkHour={row.original.id} commentsCount={row.original.claim._count.comments} />
                         ) : null
                     }
-                    <WorkHourEditModal data={row.original} />
+                    {role !== 'SUPERVISOR' && <WorkHourEditModal data={row.original} />}
                 </Box>
             ),
         }),

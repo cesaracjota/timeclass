@@ -28,13 +28,15 @@ const columnHelper = createColumnHelper();
 // Componente principal
 const Users = () => {
   const { users = [], isLoading } = useSelector((state) => state.user);
+  const { user: authUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const theme = useTheme();
+
+  const role = authUser?.user?.role;
 
   useEffect(() => {
     dispatch(getAllUsers());
   }, [dispatch]);
-
   // Función de refresh
   const handleRefresh = async () => {
     await dispatch(getAllUsers());
@@ -70,199 +72,207 @@ const Users = () => {
   };
 
   // Definición de columnas con TanStack
-  const columns = useMemo(() => [
-    columnHelper.accessor('name', {
-      header: 'Usuario',
-      cell: ({ row }) => {
-        const user = row.original;
-        const fullName = user?.name || 'Sin nombre';
-        const dni = user?.dni || 'Sin DNI';
+  const columns = useMemo(() => {
+    const cols = [
+      columnHelper.accessor('name', {
+        header: 'Usuario',
+        cell: ({ row }) => {
+          const user = row.original;
+          const fullName = user?.name || 'Sin nombre';
+          const dni = user?.dni || 'Sin DNI';
 
 
-        return (
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Avatar
-              sx={{
-                width: 32,
-                height: 32,
-                bgcolor: alpha(theme.palette.primary.main, 0.2),
-                color: theme.palette.primary.main,
-                fontWeight: 900,
-                fontSize: 12,
-                border: `2px solid ${alpha(theme.palette.primary.main, 0.1)}`
-              }}
-            >
-              {fullName.charAt(0)}
-            </Avatar>
-            <Box>
-              <Typography
-                variant="subtitle2"
+          return (
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Avatar
+                sx={{
+                  width: 32,
+                  height: 32,
+                  bgcolor: alpha(theme.palette.primary.main, 0.2),
+                  color: theme.palette.primary.main,
+                  fontWeight: 900,
+                  fontSize: 12,
+                  border: `2px solid ${alpha(theme.palette.primary.main, 0.1)}`
+                }}
               >
-                {fullName}
-              </Typography>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                sx={{ display: 'flex', alignItems: 'center' }}
-              >
-                {dni}
-              </Typography>
-            </Box>
-          </Stack>
-        );
-      },
-    }),
-    columnHelper.accessor('role', {
-      header: 'Rol',
-      cell: ({ getValue }) => {
-        const value = getValue();
-        const roleKey = value;
-    
-        const roleConfig = {
-          ADMIN: {
-            label: 'ADMINISTRADOR',
-            color: theme.palette.error.main,
-            bg: alpha(theme.palette.error.main, 0.1),
-            icon: <UserCog2 fontSize="small" />,
-          },
-          TEACHER: {
-            label: 'DOCENTE',
-            color: theme.palette.primary.main,
-            bg: alpha(theme.palette.primary.main, 0.1),
-            icon: <BookUserIcon fontSize="small" />,
-          },
-          SECRETARY: {
-            label: 'SECRETARI(A)',
-            color: theme.palette.warning.main,
-            bg: alpha(theme.palette.warning.main, 0.1),
-            icon: <UserSearchIcon fontSize="small" />,
-          },
-          SUPERVISOR: {
-            label: 'SUPERVISOR',
-            color: theme.palette.success.main,
-            bg: alpha(theme.palette.success.main, 0.1),
-            icon: <UserSearchIcon fontSize="small" />,
-          },
-        };
-    
-        const config = roleConfig[roleKey] || roleConfig.user;
-
-        return (
-          <Chip
-            icon={config?.icon}
-            label={
-              <Box component="span">
-                {config?.label}
+                {fullName.charAt(0)}
+              </Avatar>
+              <Box>
+                <Typography
+                  variant="subtitle2"
+                >
+                  {fullName}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ display: 'flex', alignItems: 'center' }}
+                >
+                  {dni}
+                </Typography>
               </Box>
-            }
-            size="medium"
-            sx={{
-              borderRadius: '999px',
-              fontWeight: 500,
-              backgroundColor: config?.bg,
-              color: config?.color,
-              borderColor: config?.color,
-              borderWidth: 1,
-              borderStyle: 'solid',
-              textTransform: 'capitalize',
-              '& .MuiChip-icon': {
+            </Stack>
+          );
+        },
+      }),
+      columnHelper.accessor('role', {
+        header: 'Rol',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          const roleKey = value;
+
+          const roleConfig = {
+            ADMIN: {
+              label: 'ADMINISTRADOR',
+              color: theme.palette.error.main,
+              bg: alpha(theme.palette.error.main, 0.1),
+              icon: <UserCog2 fontSize="small" />,
+            },
+            TEACHER: {
+              label: 'DOCENTE',
+              color: theme.palette.primary.main,
+              bg: alpha(theme.palette.primary.main, 0.1),
+              icon: <BookUserIcon fontSize="small" />,
+            },
+            SECRETARY: {
+              label: 'SECRETARI(A)',
+              color: theme.palette.warning.main,
+              bg: alpha(theme.palette.warning.main, 0.1),
+              icon: <UserSearchIcon fontSize="small" />,
+            },
+            SUPERVISOR: {
+              label: 'SUPERVISOR',
+              color: theme.palette.success.main,
+              bg: alpha(theme.palette.success.main, 0.1),
+              icon: <UserSearchIcon fontSize="small" />,
+            },
+          };
+
+          const config = roleConfig[roleKey] || roleConfig.user;
+
+          return (
+            <Chip
+              icon={config?.icon}
+              label={
+                <Box component="span">
+                  {config?.label}
+                </Box>
+              }
+              size="medium"
+              sx={{
+                borderRadius: '999px',
+                fontWeight: 500,
+                backgroundColor: config?.bg,
                 color: config?.color,
-              },
-            }}
-            variant="outlined"
-          />
-        );
-      },
-      size: 150,
-    }),
-    columnHelper.accessor('passwordChanged', {
-      header: 'CONTRASEÑA CAMBIADA',
-      cell: ({ getValue }) => {
-        const value = getValue();
-        return <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
-          <Chip
-            label={value ? 'SI' : 'NO'}
-            size="small"
-            sx={{
-              borderRadius: '999px',
-              fontWeight: 500,
-              backgroundColor: value ? theme.palette.success.main : theme.palette.error.main,
-              color: 'white',
-              borderColor: value ? theme.palette.success.main : theme.palette.error.main,
-              borderWidth: 1,
-              borderStyle: 'solid',
-              textTransform: 'uppercase',
-            }}
-            variant="outlined"
-          />
-        </Box>;
-      },
-    }),
-    columnHelper.accessor('createdAt', {
-      header: 'Fecha de registro',
-      cell: ({ getValue }) => {
-        const date = new Date(getValue());
-        return (
-          <Typography variant="body2" color="text.secondary">
-            {date.toLocaleDateString('es-ES', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </Typography>
-        );
-      },
-      size: 180,
-    }),
-    columnHelper.accessor('active', {
-      header: 'Estado',
-      cell: ({ getValue }) => {
-        const value = getValue();
-        return <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
-          <Chip
-            label={value ? 'ACTIVO' : 'INACTIVO'}
-            size="small"
-            sx={{
-              borderRadius: '999px',
-              fontWeight: 500,
-              backgroundColor: value ? theme.palette.success.main : theme.palette.error.main,
-              color: 'white',
-              borderColor: value ? theme.palette.success.main : theme.palette.error.main,
-              borderWidth: 1,
-              borderStyle: 'solid',
-              textTransform: 'uppercase',
-            }}
-            variant="outlined"
-          />
-        </Box>;
-      },
-    }),
-    columnHelper.accessor('id', {
-      header: 'Acciones',
-      cell: ({ getValue, row }) => {
-        const userId = getValue();
-        const user = row.original;
-        return (
-          <Stack direction="row" alignItems="center" gap={1}>
-            <UserEditModal user={user} />
-            <DeleteConfirmDialog
-              title="Eliminar Usuario"
-              description={`¿Estás seguro que deseas eliminar a ${user.name}?`}
-              onConfirm={() => handleDelete(userId)}
-              renderTrigger={(open) => (
-                <IconButton onClick={open} color="error">
-                  <DeleteOutline size={24} />
-                </IconButton>
-              )}
+                borderColor: config?.color,
+                borderWidth: 1,
+                borderStyle: 'solid',
+                textTransform: 'capitalize',
+                '& .MuiChip-icon': {
+                  color: config?.color,
+                },
+              }}
+              variant="outlined"
             />
-          </Stack>
-        );
-      },
-      enableSorting: false,
-      maxSize: 100,
-      enableColumnFilter: false,
-    }),
-  ], [handleDelete, theme.palette]);
+          );
+        },
+        size: 150,
+      }),
+      columnHelper.accessor('passwordChanged', {
+        header: 'CONTRASEÑA CAMBIADA',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          return <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
+            <Chip
+              label={value ? 'SI' : 'NO'}
+              size="small"
+              sx={{
+                borderRadius: '999px',
+                fontWeight: 500,
+                backgroundColor: value ? theme.palette.success.main : theme.palette.error.main,
+                color: 'white',
+                borderColor: value ? theme.palette.success.main : theme.palette.error.main,
+                borderWidth: 1,
+                borderStyle: 'solid',
+                textTransform: 'uppercase',
+              }}
+              variant="outlined"
+            />
+          </Box>;
+        },
+      }),
+      columnHelper.accessor('createdAt', {
+        header: 'Fecha de registro',
+        cell: ({ getValue }) => {
+          const date = new Date(getValue());
+          return (
+            <Typography variant="body2" color="text.secondary">
+              {date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </Typography>
+          );
+        },
+        size: 180,
+      }),
+      columnHelper.accessor('active', {
+        header: 'Estado',
+        cell: ({ getValue }) => {
+          const value = getValue();
+          return <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'center' }}>
+            <Chip
+              label={value ? 'ACTIVO' : 'INACTIVO'}
+              size="small"
+              sx={{
+                borderRadius: '999px',
+                fontWeight: 500,
+                backgroundColor: value ? theme.palette.success.main : theme.palette.error.main,
+                color: 'white',
+                borderColor: value ? theme.palette.success.main : theme.palette.error.main,
+                borderWidth: 1,
+                borderStyle: 'solid',
+                textTransform: 'uppercase',
+              }}
+              variant="outlined"
+            />
+          </Box>;
+        },
+      }),
+      columnHelper.accessor('id', {
+        header: 'Acciones',
+        cell: ({ getValue, row }) => {
+          const userId = getValue();
+          const user = row.original;
+          return (
+            <Stack direction="row" alignItems="center" gap={1}>
+              <UserEditModal user={user} />
+              <DeleteConfirmDialog
+                title="Eliminar Usuario"
+                description={`¿Estás seguro que deseas eliminar a ${user.name}?`}
+                onConfirm={() => handleDelete(userId)}
+                renderTrigger={(open) => (
+                  <IconButton onClick={open} color="error">
+                    <DeleteOutline size={24} />
+                  </IconButton>
+                )}
+              />
+            </Stack>
+          );
+        },
+        enableSorting: false,
+        maxSize: 100,
+        enableColumnFilter: false,
+      }),
+    ];
+
+    if (role === 'SUPERVISOR') {
+      return cols.filter(col => col.header !== 'Acciones');
+    }
+    return cols;
+
+  }, [handleDelete, theme.palette, role]);
 
   return (
     <>
@@ -277,7 +287,7 @@ const Users = () => {
             Gestiona la lista de usuarios
           </Typography>
         </Box>
-        <UserCreateModal />
+        {role !== 'SUPERVISOR' && <UserCreateModal />}
         {/* <Button color="primary" sx={{ width: { xs: '100%', md: 'auto' } }} startIcon={<Add />} variant="contained">Agregar Nuevo Usuario</Button> */}
       </Stack>
       <MuiDataTable

@@ -8,19 +8,19 @@ export const navigation = [
         segment: '',
         title: 'INICIO',
         icon: <HomeIcon />,
-        allowedRoles: ['ADMIN', 'SECRETARY', 'TEACHER', 'SUPERVISOR'],
+        allowedRoles: ['ADMIN', 'TEACHER', 'SUPERVISOR'],
     },
     {
         segment: 'users',
         title: 'USUARIO',
         icon: <User2Icon />,
-        allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'], // solo admin puede ver esto
+        allowedRoles: ['ADMIN', 'SUPERVISOR'], // solo admin puede ver esto
         children: [
             {
                 segment: 'list',
                 title: 'LISTAR USUARIOS',
                 icon: <Users2 />,
-                allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'],
+                allowedRoles: ['ADMIN', 'SUPERVISOR'],
             },
         ],
     },
@@ -28,19 +28,19 @@ export const navigation = [
         segment: 'teachers',
         title: 'DOCENTE',
         icon: <User2Icon />,
-        allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'],
+        allowedRoles: ['ADMIN', 'SUPERVISOR'],
         children: [
             {
                 segment: 'list',
                 title: 'LISTAR DOCENTES',
                 icon: <Users2 />,
-                allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'],
+                allowedRoles: ['ADMIN', 'SUPERVISOR'],
             },
             {
                 segment: 'upload',
                 title: 'IMPORTAR DOCENTES',
                 icon: <UploadCloudIcon />,
-                allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'],
+                allowedRoles: ['ADMIN'],
             },
         ],
     },
@@ -48,25 +48,25 @@ export const navigation = [
         segment: 'work-hours',
         title: 'HORAS',
         icon: <Clock />,
-        allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'],
+        allowedRoles: ['ADMIN', 'SUPERVISOR'],
         children: [
             {
                 segment: 'list',
                 title: 'HORAS TRABAJADAS',
                 icon: <ListAlt />,
-                allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'],
+                allowedRoles: ['ADMIN', 'SUPERVISOR'],
             },
             {
                 segment: 'upload-school',
                 title: 'IMPORTAR COLEGIO',
                 icon: <UploadCloudIcon />,
-                allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'],
+                allowedRoles: ['ADMIN'],
             },
             {
                 segment: 'upload-academy',
                 title: 'IMPORTAR ACADEMIA',
                 icon: <UploadCloudIcon />,
-                allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'],
+                allowedRoles: ['ADMIN'],
             },
         ],
     },
@@ -89,13 +89,13 @@ export const navigation = [
         segment: 'reports',
         title: 'REPORTES',
         icon: <ListAlt />,
-        allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'],
+        allowedRoles: ['ADMIN', 'SUPERVISOR'],
         children: [
             {
                 segment: 'work-hours',
                 title: 'HORAS',
                 icon: <ListAlt />,
-                allowedRoles: ['ADMIN', 'SECRETARY', 'SUPERVISOR'],
+                allowedRoles: ['ADMIN', 'SUPERVISOR'],
             }
         ],
     },

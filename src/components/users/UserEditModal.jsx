@@ -55,7 +55,6 @@ const UserEditModal = ({ user }) => {
     const roleOptions = [
         { value: "ADMIN", label: "ADMINISTRADOR" },
         { value: "TEACHER", label: "DOCENTE" },
-        { value: "SECRETARY", label: "SECRETARIA" },
         { value: "SUPERVISOR", label: "SUPERVISOR" },
     ];
 

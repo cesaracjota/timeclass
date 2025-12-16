@@ -20,8 +20,11 @@ import * as ExcelJS from 'exceljs';
 
 const Teachers = () => {
   const { teachers, isLoading } = useSelector((state) => state.teacher);
+  const { user: authUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const theme = useTheme();
+
+  const role = authUser?.user?.role;
 
   useEffect(() => {
     dispatch(getAllTeachers());
@@ -58,7 +61,7 @@ const Teachers = () => {
     ].map(row => row.join(',')).join('\n');
 
     const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a'); 
+    const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `DOCENTES_${new Date().toISOString().split('T')[0]}.csv`;
     link.click();
@@ -67,7 +70,7 @@ const Teachers = () => {
   const handleExportExcel = async (filteredRows) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('DOCENTES');
-    
+
     worksheet.columns = [
       { header: 'DOCENTE', key: 'name' },
       { header: 'DNI', key: 'dni' },
@@ -147,25 +150,33 @@ const Teachers = () => {
       cell: ({ row }) => (
         <Box component={'div'} sx={{ display: 'flex', gap: 2 }}>
           <TeacherWorkHourHistorialModal teacherId={row.original.id} teacher={row.original} />
-          <TeacherEditModal teacher={row.original} />
-          <DeleteConfirmDialog
-            title="ELIMINAR DOCENTE"
-            description={
-              <Typography variant="h6" fontWeight={400} textAlign={'center'}>
-                ¿Estás seguro que deseas eliminar a <strong>{row?.original?.user?.name}</strong>?
-              </Typography>
-            }
-            onConfirm={() => handleDelete(row?.original?.id)}
-            renderTrigger={(open) => (
-              <IconButton onClick={open} color="error">
-                <DeleteOutline size={24} />
-              </IconButton>
-            )}
-          />
+          {role !== 'SUPERVISOR' && (
+            <>
+              <TeacherEditModal teacher={row.original} />
+              <DeleteConfirmDialog
+                title="ELIMINAR DOCENTE"
+                description={
+                  <Typography variant="h6" fontWeight={400} textAlign={'center'}>
+                    ¿Estás seguro que deseas eliminar a <strong>{row?.original?.user?.name}</strong>?
+                  </Typography>
+                }
+                onConfirm={() => handleDelete(row?.original?.id)}
+                renderTrigger={(open) => (
+                  <IconButton onClick={open} color="error">
+                    <DeleteOutline size={24} />
+                  </IconButton>
+                )}
+              />
+            </>
+          )}
         </Box>
       ),
     },
-  ];
+  ].filter(col => {
+    // if (role === 'SUPERVISOR' && col.id === 'actions') return false; 
+    // Permitimos ver acciones para el supervisor (solo historial)
+    return true;
+  });
 
   return (
     <>
@@ -180,7 +191,7 @@ const Teachers = () => {
             Gestiona los docentes en el sistema
           </Typography>
         </Box>
-        <UserCreateModal />
+        {role !== 'SUPERVISOR' && <UserCreateModal />}
       </Stack>
 
       <DataTableTeacher

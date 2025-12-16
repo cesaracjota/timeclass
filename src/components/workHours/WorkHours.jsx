@@ -29,6 +29,7 @@ import ExcelJS from "exceljs";
 
 const WorkHours = () => {
     const { workHours, isLoading, totalPages, totalItems } = useSelector((state) => state.workHour);
+    const { role } = useSelector((state) => state.auth);
 
     const dispatch = useDispatch();
 
@@ -333,34 +334,39 @@ const WorkHours = () => {
             enableResizing: false,
         },
         {
-            accessorKey: 'actions',
-            header: 'ACCIONES',
+            header: "ACCIONES",
+            accessorKey: "actions",
             enableHiding: true,
             size: 100,
             enableResizing: false,
             enableSorting: false,
-            cell: ({ row }) => {
-                return <Box component={'div'} sx={{ display: 'flex', gap: 1 }}>
+            cell: ({ row }) => (
+                <Box component={'div'} sx={{ display: 'flex', gap: 1 }}>
                     {
                         row.original.claim ? (
                             <ClaimViewModal idWorkHour={row.original.id} commentsCount={row.original.claim._count.comments} />
                         ) : null
                     }
-                    <WorkHourEditModal data={row.original} />
-                    <DeleteConfirmDialog
-                        title="Eliminar Hora de Trabajo"
-                        description={`¿Estás seguro que deseas eliminar la hora de trabajo de ${row?.original?.teacher?.user?.name}?`}
-                        onConfirm={() => handleDelete(row?.original?.id)}
-                        renderTrigger={(open) => (
-                            <IconButton onClick={open} color="error">
-                                <DeleteOutline size={24} />
-                            </IconButton>
-                        )}
-                    />
+                    {role !== 'SUPERVISOR' && (
+                        <>
+                            <WorkHourEditModal data={row.original} />
+                            <DeleteConfirmDialog
+                                title="Eliminar Hora de Trabajo"
+                                description={`¿Estás seguro que deseas eliminar la hora de trabajo de ${row?.original?.teacher?.user?.name}?`}
+                                onConfirm={() => handleDelete(row?.original?.id)}
+                                renderTrigger={(open) => (
+                                    <IconButton onClick={open} color="error">
+                                        <DeleteOutline size={24} />
+                                    </IconButton>
+                                )}
+                            />
+                        </>
+                    )}
                 </Box>
-            },
-        }
-    ]
+            ),
+        },
+
+    ];
 
     const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
@@ -390,30 +396,11 @@ const WorkHours = () => {
                         HORAS DE TRABAJO
                     </Typography>
                     <Typography variant="body1" color="text.secondary">
-                        Gestiona las horas de trabajo
+                        Gestiona las horas de trabajo de los docentes
                     </Typography>
                 </Box>
-                <WorkHourCreateModal />
+                {role !== 'SUPERVISOR' && <WorkHourCreateModal />}
             </Stack>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-                <FormControl size="small" sx={{ minWidth: 200 }}>
-                    <InputLabel>PERIODO</InputLabel>
-                    <Select
-                        value={months}
-                        label="PERIODO"
-                        onChange={handleMonthChange}
-                    // onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                        <MenuItem value="all">Todos</MenuItem>
-                        {monthOptions.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                                {option.value}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-            </Box>
-
             <Box sx={{ mb: 2 }}>
                 <Stack direction="row" spacing={1} alignItems="center">
                     <ToggleButtonGroup

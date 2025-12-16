@@ -29,16 +29,16 @@ const weeks = [
 ];
 
 const days = [
-    { value: 'LUNES', label: 'LUNES' },
-    { value: 'MARTES', label: 'MARTES' },
-    { value: 'MIÉRCOLES', label: 'MIÉRCOLES' },
-    { value: 'JUEVES', label: 'JUEVES' },
-    { value: 'VIERNES', label: 'VIERNES' },
-    { value: 'SABADO', label: 'SABADO' },
-    { value: 'DOMINGO', label: 'DOMINGO' },
+    { value: 'LUNES', label: 'lunes' },
+    { value: 'MARTES', label: 'martes' },
+    { value: 'MIERCOLES', label: 'miercoles' },
+    { value: 'JUEVES', label: 'jueves' },
+    { value: 'VIERNES', label: 'viernes' },
+    { value: 'SABADO', label: 'sabado' },
+    { value: 'DOMINGO', label: 'domingo' },
 ];
 
-const WorkHourCreateModal = () => {
+const WorkHourCreateModal = ({ disabled }) => {
     const [open, setOpen] = useState(false);
     const [teachers, setTeachers] = useState([]);
     const [search, setSearch] = useState("");
@@ -112,7 +112,7 @@ const WorkHourCreateModal = () => {
 
     return (
         <>
-            <Button startIcon={<Add />} fullWidth={isMobile} variant="contained" onClick={() => setOpen(true)}>
+            <Button startIcon={<Add />} fullWidth={isMobile} variant="contained" onClick={() => setOpen(true)} disabled={disabled}>
                 Nuevo Registro
             </Button>
 

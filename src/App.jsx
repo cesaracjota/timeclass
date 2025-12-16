@@ -10,25 +10,35 @@ import { useColorScheme } from "@mui/material/styles";
 import { getSettings } from "./features/settingSlice";
 
 function filterNavigationByRole(navigation, role) {
-  return navigation.filter((item) => !item.allowedRoles || item.allowedRoles.includes(role));
+  return navigation
+    .filter((item) => !item.allowedRoles || item.allowedRoles.includes(role))
+    .map((item) => {
+      if (item.children) {
+        return {
+          ...item,
+          children: filterNavigationByRole(item.children, role),
+        };
+      }
+      return item;
+    });
 }
 
 // Componente que sincroniza el tema guardado con Material-UI
 function ThemeSynchronizer({ children }) {
-  const { mode, setMode } = useColorScheme();
-  
+  const { setMode } = useColorScheme();
+
   useEffect(() => {
-    // Cargar tema guardado en localStorage y aplicarlo SOLO AL MONTAR
     const savedMode = localStorage.getItem('themeMode');
     if (savedMode && setMode) {
-      // Aplicar el modo guardado
       setMode(savedMode);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Solo ejecutar una vez al montar
+  }, []);
 
   return children;
 }
+
+import { MaintenancePage } from "./pages/MaintenancePage";
 
 function AppContent() {
   const dispatch = useDispatch();
@@ -40,19 +50,16 @@ function AppContent() {
 
   const filteredNavigation = filterNavigationByRole(navigation, role);
 
-  // Cargar settings al inicio de la aplicación (solo si el usuario está autenticado)
   useEffect(() => {
     if (user?.user) {
       dispatch(getSettings());
     }
   }, [dispatch, user]);
 
-  // Sincronizar color del backend si es diferente y más actualizado
   useEffect(() => {
     const savedColor = localStorage.getItem('primaryColor');
     const defaultColor = '#c9a227';
-    
-    // Si el backend tiene un color Y (localStorage está vacío O es el default), usar el del backend
+
     if (settings?.themeColor) {
       if (!savedColor || (savedColor === defaultColor && settings.themeColor !== defaultColor)) {
         updatePrimaryColor(settings.themeColor);
@@ -60,21 +67,30 @@ function AppContent() {
     }
   }, [settings?.themeColor, updatePrimaryColor]);
 
-  // Crear tema dinámico basado en las preferencias del usuario
   const dynamicTheme = useMemo(
     () => createDynamicTheme(primaryColor, hoverColor),
     [primaryColor, hoverColor]
   );
 
-  return (
-      <ReactRouterAppProvider 
-        navigation={filteredNavigation} 
-        theme={dynamicTheme}
-      >
-        <ThemeSynchronizer>
-          <AppRouter />
-        </ThemeSynchronizer>
+  if (settings?.inMaintenance) {
+    return (
+      <ReactRouterAppProvider navigation={[]} theme={dynamicTheme}>
+        <ThemeProvider>
+          <MaintenancePage />
+        </ThemeProvider>
       </ReactRouterAppProvider>
+    )
+  }
+
+  return (
+    <ReactRouterAppProvider
+      navigation={filteredNavigation}
+      theme={dynamicTheme}
+    >
+      <ThemeSynchronizer>
+        <AppRouter />
+      </ThemeSynchronizer>
+    </ReactRouterAppProvider>
   );
 }
 
